@@ -9,16 +9,18 @@ import org.yearup.data.ProductDao;
 import org.yearup.data.ShoppingCartDao;
 import org.yearup.data.UserDao;
 import org.yearup.models.ShoppingCart;
+import org.yearup.models.ShoppingCartItem;
 import org.yearup.models.User;
 
 import java.security.Principal;
+import java.sql.Connection;
 
 // convert this class to a REST controller
 // only logged in users should have access to these actions
 @RestController
-@RequestMapping("/cart")
+@RequestMapping("cart")
 @CrossOrigin
-@PreAuthorize("isAuthenticated()")
+@PreAuthorize("hasRole('USER')")
 public class ShoppingCartController
 {
     // a shopping cart requires
@@ -65,18 +67,20 @@ public class ShoppingCartController
     @PostMapping("products/{productId}")
     public void addProductToCart(@PathVariable int productId, Principal principal) {
         if (principal == null)
-        {throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You must be logged in");
+        {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
         String userName = principal.getName();
         User user = userDao.getByUserName(userName);
-        int userId = user.getId();
 
         //check if product is already in cart
+        if(user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
 
         //add product
-        shoppingCartDao.addCartItem(userId, productId, 1);
-
+        shoppingCartDao.addCartItem(user.getId(), productId, 1);
 
     }
 
@@ -84,9 +88,34 @@ public class ShoppingCartController
     // add a PUT method to update an existing product in the cart - the url should be
     // https://localhost:8080/cart/products/15 (15 is the productId to be updated)
     // the BODY should be a ShoppingCartItem - quantity is the only value that will be updated
+   @PutMapping("/products/{productId}")
+   @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateCartItem(@PathVariable int productId, @RequestBody ShoppingCartItem item, Principal principal)
+   {
+       if (principal == null) {
+           throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+       }
+       User user = userDao.getByUserName(principal.getName());
+
+       shoppingCartDao.updateCartItem(user.getId(), productId, item.getQuantity());
+   }
+
+
 
 
     // add a DELETE method to clear all products from the current users cart
     // https://localhost:8080/cart
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void clearCart(Principal principal)
+    {
+        if (principal == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        User user = userDao.getByUserName(principal.getName());
+
+        shoppingCartDao.clearCart(user.getId());
+    }
 
 }

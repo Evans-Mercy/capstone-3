@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.yearup.data.CategoryDao;
 import org.yearup.data.ProductDao;
 import org.yearup.models.Category;
@@ -34,7 +35,6 @@ public class CategoriesController
     // add the appropriate annotation for a get action -done
     @GetMapping
     public List<Category> getAll(){
-        System.out.println("Here's all categories");
         // find and return all categories - done
         return this.categoryDao.getAllCategories();
     }
@@ -43,7 +43,12 @@ public class CategoriesController
     @GetMapping("/{identifier}")
     public Category getById(@PathVariable int identifier) {
         // get the category by id - done
-        return this.categoryDao.getById(identifier);
+        Category category = this.categoryDao.getById(identifier);
+
+        if (category == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found");
+        }
+        return category;
     }
 
     // the url to return all products in category 1 would look like this
@@ -86,5 +91,20 @@ public class CategoriesController
     {
         // delete the category by id
         categoryDao.delete(id);
+    }
+
+    //reset categories after testing
+    @PostMapping("/reset")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.OK)
+    public void resetCategories() {
+        List<Category> categories = categoryDao.getAllCategories();
+        for (Category c : categories) {
+            categoryDao.delete(c.getCategoryId());
+        }
+
+        categoryDao.create(new Category(0, "Electronics", "Devices and gadgets"));
+        categoryDao.create(new Category(0, "Books", "All kinds of books"));
+        categoryDao.create(new Category(0, "Clothing", "Apparel and accessories"));
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import org.yearup.data.ShoppingCartDao;
 import org.yearup.models.Profile;
 import org.yearup.data.ProfileDao;
 import org.yearup.data.UserDao;
@@ -32,12 +33,14 @@ public class AuthenticationController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private UserDao userDao;
     private ProfileDao profileDao;
+    private ShoppingCartDao shoppingCartDao;
 
-    public AuthenticationController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, UserDao userDao, ProfileDao profileDao) {
+    public AuthenticationController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, UserDao userDao, ProfileDao profileDao, ShoppingCartDao shoppingCartDao) {
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.userDao = userDao;
         this.profileDao = profileDao;
+        this.shoppingCartDao = shoppingCartDao;
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -84,7 +87,18 @@ public class AuthenticationController {
             // create profile
             Profile profile = new Profile();
             profile.setUserId(user.getId());
+            profile.setFirstName("");
+            profile.setLastName("");
+            profile.setEmail("");
+            profile.setPhone("");
+            profile.setAddress("");
+            profile.setCity("");
+            profile.setState("");
+            profile.setZip("");
             profileDao.create(profile);
+
+            //empty cart at registration
+            shoppingCartDao.clearCart(user.getId());
 
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         }
