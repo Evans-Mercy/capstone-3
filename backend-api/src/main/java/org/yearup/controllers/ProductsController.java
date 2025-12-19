@@ -81,6 +81,7 @@ public class ProductsController
     {
         try
         {
+            //if it called create() then the duplicates would happen
             productDao.update(id, product);
         }
         catch(Exception ex)
