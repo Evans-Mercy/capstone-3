@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project is a **REST API for an Online Store**. The goal was to practice what we learned in class by building something that actually works, breaks, and then gets fixed (kind of like me before coffee).
+This project is a **REST API for an Easyshop online store**. The goal was to practice what we learned in class by building something that actually works, breaks, and then gets fixed (kind of like me before coffee).
 
 The API lets you manage categories and products, log in users, store shopping carts, and update user profiles. Everything is based on what we learned in the workbook nothing fancy.
 
