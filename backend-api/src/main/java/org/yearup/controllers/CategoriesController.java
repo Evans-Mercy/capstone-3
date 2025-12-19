@@ -92,19 +92,4 @@ public class CategoriesController
         // delete the category by id
         categoryDao.delete(id);
     }
-
-    //reset categories after testing
-    @PostMapping("/reset")
-    @PreAuthorize("hasRole('ADMIN')")
-    @ResponseStatus(HttpStatus.OK)
-    public void resetCategories() {
-        List<Category> categories = categoryDao.getAllCategories();
-        for (Category c : categories) {
-            categoryDao.delete(c.getCategoryId());
-        }
-
-        categoryDao.create(new Category(0, "Electronics", "Devices and gadgets"));
-        categoryDao.create(new Category(0, "Books", "All kinds of books"));
-        categoryDao.create(new Category(0, "Clothing", "Apparel and accessories"));
-    }
 }

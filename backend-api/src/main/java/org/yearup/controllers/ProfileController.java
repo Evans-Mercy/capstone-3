@@ -1,9 +1,7 @@
 package org.yearup.controllers;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.yearup.data.ProfileDao;
 import org.yearup.data.UserDao;
@@ -11,6 +9,10 @@ import org.yearup.models.Profile;
 import org.yearup.models.User;
 
 import java.security.Principal;
+
+@RestController
+@CrossOrigin
+@RequestMapping("/profile")
 
 public class ProfileController {
     private ProfileDao profileDao;

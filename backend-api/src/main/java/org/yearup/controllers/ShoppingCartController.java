@@ -13,7 +13,6 @@ import org.yearup.models.ShoppingCartItem;
 import org.yearup.models.User;
 
 import java.security.Principal;
-import java.sql.Connection;
 
 // convert this class to a REST controller
 // only logged in users should have access to these actions
